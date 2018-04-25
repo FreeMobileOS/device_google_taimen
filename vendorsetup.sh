@@ -14,4 +14,27 @@
 # limitations under the License.
 #
 
+if ! [ -d vendor/google_devices/taimen ]; then
+	# https://developers.google.com/android/blobs-preview
+	[ -e google_devices-taimen-4729765-58033fdf.tgz ] || wget https://dl.google.com/dl/android/aosp/google_devices-taimen-4729765-58033fdf.tgz
+	[ -e qcom-taimen-4729765-bf7c6e45.tgz ] || wget https://dl.google.com/dl/android/aosp/qcom-taimen-4729765-bf7c6e45.tgz
+	for i in *-taimen-*.tgz; do
+		tar xf $i
+	done
+	mkdir tmp-bin
+	# Replace real "more" with a cat wrapper so we don't have to fake
+	# user input... (just ln -s cat tmp-bin/more will break things if
+	# cat is toybox, busybox or another unified binary)
+	echo 'exec cat "$@"' >tmp-bin/more
+	chmod +x tmp-bin/more
+	# And make sure we have GNU tar first on the path, the extract
+	# scripts don't like libarchive tar at all
+	which gtar 2>/dev/null && ln -s $(which gtar) tmp-bin/tar
+	export PATH=`pwd`/tmp-bin:$PATH
+	for i in extract-*-taimen.sh; do
+		echo -e "\nI ACCEPT" |./$i
+	done
+	rm -rf tmp-bin
+fi
+
 add_lunch_combo aosp_taimen-userdebug

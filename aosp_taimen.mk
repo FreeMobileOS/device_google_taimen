@@ -24,7 +24,6 @@ $(call inherit-product-if-exists, vendor/google_devices/taimen/proprietary/devic
 
 PRODUCT_PACKAGES += \
     Dialer \
-    Launcher3 \
     WallpaperPicker \
     netutils-wrapper-1.0 \
     vndk_package
